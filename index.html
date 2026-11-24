@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1e3a5f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="لوحة الشرف">
+  <title>لوحة الشرف</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --clr-primary: #1e3a5f; --clr-primary-h: #162d4a;
+      --clr-blue: #2563eb; --clr-bg: #f1f5f9; --clr-surface: #fff;
+      --clr-border: #e2e8f0; --clr-text: #0f172a; --clr-muted: #64748b;
+      --clr-danger: #dc2626; --clr-success: #16a34a;
+      --clr-wa: #25D366; --radius: 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--clr-bg); color: var(--clr-text);
+      min-height: 100dvh; direction: rtl;
+      -webkit-font-smoothing: antialiased;
+    }
+    #app {
+      max-width: 480px; margin: 0 auto;
+      min-height: 100dvh; display: flex;
+      flex-direction: column; background: var(--clr-bg);
+    }
+
+    /* Header */
+    .app-header {
+      background: var(--clr-primary); color: #fff;
+      padding: 13px 16px; display: flex; align-items: center; gap: 10px;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2); flex-shrink: 0;
+    }
+    .app-header h1 { font-size: 1.05rem; font-weight: 700; flex: 1; }
+    .btn-icon {
+      width: 38px; height: 38px; border-radius: 8px; border: none;
+      background: rgba(255,255,255,.15); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1rem; flex-shrink: 0; transition: background .18s;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,.28); }
+
+    /* Content */
+    .content { flex: 1; padding: 14px; overflow-y: auto; }
+
+    /* Cards */
+    .card {
+      background: var(--clr-surface); border-radius: var(--radius);
+      border: 1px solid var(--clr-border);
+      box-shadow: 0 1px 3px rgba(0,0,0,.07); overflow: hidden;
+    }
+    .card + .card { margin-top: 12px; }
+
+    /* Class list */
+    .class-item {
+      display: flex; align-items: center; padding: 14px 16px; gap: 12px;
+      cursor: pointer; border-bottom: 1px solid var(--clr-border);
+      transition: background .15s; -webkit-tap-highlight-color: transparent;
+    }
+    .class-item:last-child { border-bottom: none; }
+    .class-item:active { background: #f8fafc; }
+    .class-icon {
+      width: 44px; height: 44px; background: #eff6ff; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .class-info { flex: 1; min-width: 0; }
+    .class-name { font-weight: 700; font-size: .98rem; }
+    .class-count { font-size: .78rem; color: var(--clr-muted); margin-top: 2px; }
+    .class-actions { display: flex; gap: 2px; }
+    .btn-sm {
+      width: 32px; height: 32px; border-radius: 6px; border: none;
+      background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; color: var(--clr-muted); transition: background .15s, color .15s;
+    }
+    .btn-sm:hover { background: #f1f5f9; color: var(--clr-text); }
+    .btn-sm.danger:hover { background: #fef2f2; color: var(--clr-danger); }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 56px 24px; color: var(--clr-muted); }
+    .empty-state .icon { font-size: 3.2rem; margin-bottom: 14px; }
+    .empty-state h3 { font-size: 1rem; font-weight: 700; color: var(--clr-text); margin-bottom: 6px; }
+    .empty-state p { font-size: .86rem; line-height: 1.6; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 7px; padding: 11px 18px; border-radius: var(--radius); border: none;
+      font-family: 'Cairo', sans-serif; font-size: .92rem; font-weight: 700;
+      cursor: pointer; transition: all .18s; white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-primary   { background: var(--clr-primary); color: #fff; }
+    .btn-primary:hover { background: var(--clr-primary-h); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-secondary { background: var(--clr-surface); color: var(--clr-text); border: 1px solid var(--clr-border); }
+    .btn-secondary:hover { background: #f8fafc; }
+    .btn-danger    { background: var(--clr-danger); color: #fff; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-whatsapp  { background: var(--clr-wa); color: #fff; }
+    .btn-download  { background: var(--clr-blue); color: #fff; }
+    .btn-block { width: 100%; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
+
+    /* Style selector */
+    .style-selector {
+      background: var(--clr-surface); border-top: 1px solid var(--clr-border);
+      padding: 9px 12px 7px; flex-shrink: 0;
+    }
+    .style-label { font-size: .71rem; font-weight: 700; color: var(--clr-muted); margin-bottom: 7px; letter-spacing: .03em; }
+    .style-chips {
+      display: flex; gap: 7px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; padding-bottom: 2px;
+    }
+    .style-chips::-webkit-scrollbar { display: none; }
+    .chip {
+      flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px;
+      padding: 6px 13px; border-radius: 100px;
+      border: 1.5px solid var(--clr-border); background: var(--clr-surface);
+      font-family: 'Cairo', sans-serif; font-size: .82rem; font-weight: 700;
+      color: var(--clr-muted); cursor: pointer; transition: all .18s; white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .chip:hover  { border-color: var(--clr-primary); color: var(--clr-primary); background: #eff6ff; }
+    .chip.active { background: var(--clr-primary); border-color: var(--clr-primary); color: #fff; }
+    .custom-prompt-wrap { margin-top: 8px; display: none; }
+    .custom-prompt-wrap.visible { display: block; }
+    .custom-prompt-input {
+      width: 100%; padding: 9px 13px;
+      border: 1.5px solid var(--clr-border); border-radius: 10px;
+      font-family: 'Cairo', sans-serif; font-size: .9rem; color: var(--clr-text);
+      background: var(--clr-surface); outline: none;
+      transition: border-color .18s, box-shadow .18s; direction: rtl;
+    }
+    .custom-prompt-input:focus { border-color: var(--clr-blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+    .custom-prompt-hint { font-size: .73rem; color: var(--clr-muted); margin-top: 4px; }
+
+    /* Generate bar */
+    .generate-bar {
+      padding: 10px 14px 12px; background: var(--clr-bg);
+      border-top: 1px solid var(--clr-border); flex-shrink: 0;
+    }
+
+    /* Checklist */
+    .checklist-info {
+      padding: 10px 16px; background: #eff6ff; border-bottom: 1px solid #dbeafe;
+      font-size: .84rem; color: #1d4ed8; font-weight: 600; flex-shrink: 0;
+    }
+    .select-toolbar {
+      display: flex; gap: 6px; padding: 8px 12px;
+      background: var(--clr-surface); border-bottom: 1px solid var(--clr-border); flex-shrink: 0;
+    }
+    .select-toolbar .btn { flex: 1; padding: 7px 4px; font-size: .78rem; border-radius: 8px; }
+    .student-item {
+      display: flex; align-items: center; padding: 13px 16px; gap: 12px;
+      border-bottom: 1px solid var(--clr-border); cursor: pointer;
+      transition: background .12s; -webkit-tap-highlight-color: transparent;
+    }
+    .student-item:last-child { border-bottom: none; }
+    .student-item:active { background: #f8fafc; }
+    .student-item.checked { background: #f0fdf4; }
+    .checkbox {
+      width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--clr-border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all .18s; font-size: .8rem; font-weight: 900;
+    }
+    .student-item.checked .checkbox { background: var(--clr-success); border-color: var(--clr-success); color: #fff; }
+    .student-name { font-size: .98rem; font-weight: 600; flex: 1; }
+
+    /* Forms */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: .82rem; font-weight: 700; margin-bottom: 5px; }
+    .form-input, .form-textarea {
+      width: 100%; padding: 11px 13px;
+      border: 1px solid var(--clr-border); border-radius: 10px;
+      font-family: 'Cairo', sans-serif; font-size: .93rem; color: var(--clr-text);
+      background: var(--clr-surface); outline: none;
+      transition: border-color .18s, box-shadow .18s; direction: rtl;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--clr-blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+    .form-textarea { resize: vertical; min-height: 150px; line-height: 1.9; }
+    .form-hint { font-size: .75rem; color: var(--clr-muted); margin-top: 4px; line-height: 1.5; }
+    .section-title {
+      font-size: .72rem; font-weight: 700; letter-spacing: .04em;
+      color: var(--clr-muted); margin: 18px 0 7px; padding: 0 2px;
+    }
+    hr.divider { border: none; border-top: 1px solid var(--clr-border); margin: 14px 0; }
+    .actions-row { display: flex; gap: 10px; margin-top: 14px; }
+    .actions-row .btn { flex: 1; }
+    .student-manage-item {
+      display: flex; align-items: center; padding: 10px 14px; gap: 10px;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .student-manage-item:last-child { border-bottom: none; }
+    .student-manage-name { flex: 1; font-size: .92rem; font-weight: 600; }
+
+    /* FAB */
+    .fab {
+      position: fixed; bottom: 24px; left: 20px;
+      width: 54px; height: 54px; border-radius: 15px;
+      background: var(--clr-primary); color: #fff; border: none;
+      font-size: 1.5rem; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(30,58,95,.4);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .18s; z-index: 50;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .fab:active { transform: scale(.96); }
+
+    /* Preview — landscape-aware */
+    .preview-wrap {
+      flex: 1; display: flex; flex-direction: column;
+      background: #060c1a; min-height: 0;
+    }
+    .preview-img-area {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 12px; overflow: hidden; min-height: 0;
+    }
+    #preview-img {
+      max-width: 100%; max-height: 100%;
+      width: auto; height: auto;
+      border-radius: 8px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.6);
+      object-fit: contain; display: block;
+    }
+    .preview-actions {
+      padding: 11px 14px; display: flex; gap: 10px;
+      background: #060c1a; border-top: 1px solid rgba(255,255,255,.1); flex-shrink: 0;
+    }
+    .preview-actions .btn { flex: 1; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 80px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: #1e293b; color: #fff;
+      padding: 9px 20px; border-radius: 100px;
+      font-size: .84rem; font-weight: 600; white-space: nowrap;
+      opacity: 0; transition: opacity .25s, transform .25s;
+      z-index: 1100; pointer-events: none; max-width: 90vw; text-align: center;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Loading overlay */
+    #loading-overlay {
+      position: fixed; inset: 0; background: rgba(6,12,26,.9);
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 1000; gap: 18px;
+    }
+    #loading-overlay.active { display: flex; }
+    .spinner {
+      width: 50px; height: 50px;
+      border: 4px solid rgba(255,255,255,.18); border-top-color: #fff;
+      border-radius: 50%; animation: spin .75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: #fff; font-size: 1.08rem; font-weight: 700; text-align: center; padding: 0 28px; }
+    .loading-sub  { color: rgba(255,255,255,.6); font-size: .84rem; text-align: center; padding: 0 28px; }
+
+    /* Scroll area */
+    .scroll-area { flex: 1; overflow-y: auto; min-height: 0; }
+
+    /* Settings */
+    .settings-about { font-size: .84rem; color: var(--clr-muted); line-height: 1.8; }
+
+    @media (min-width: 500px) { #app { box-shadow: 0 0 40px rgba(0,0,0,.12); } }
+  </style>
+</head>
+<body>
+
+<div id="app"></div>
+<canvas id="honor-canvas" style="position:absolute;left:-9999px;top:-9999px;"></canvas>
+
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">جاري تصميم لوحة الشرف...</div>
+  <div class="loading-sub"  id="loading-sub">⏳ يرسم الذكاء الاصطناعي خلفية مميزة</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════
+   CONFIG  (Landscape 16:9)
+═══════════════════════════════════════ */
+const API_KEY  = 'sk_pai3AK6r2Y4n7phxdYD7UNLaSAGqWDmo';
+const API_BASE = 'https://gen.pollinations.ai';
+const CW = 1344; // canvas width
+const CH = 768;  // canvas height
+
+const NO_TEXT = 'STRICTLY NO text NO letters NO words NO numbers NO writing NO scripts NO signs NO banners NO watermarks NO typography NO logos';
+const QUALITY = '3D Disney Pixar animated movie style, cinematic volumetric lighting, vibrant saturated colors, ultra detailed photorealistic render, 8k resolution, wide 16:9 horizontal landscape composition';
+
+const STYLE_PROMPTS = {
+  balloons: `Joyful festive 3D Pixar celebration, dozens of colorful glossy balloons floating in bright sunny blue sky with soft fluffy white clouds, rainbow light rays from above, colorful confetti raining down, distant green meadow horizon, wide open clean sky center, balloons and confetti elements near edges only, ${NO_TEXT}, ${QUALITY}`,
+  stars:    `Magical 3D Pixar night sky, thousands of glowing golden stars in a deep twilight sky, shimmering nebula clouds in purple and indigo, large crescent moon in upper corner, sparkling stardust trails, golden star clusters near the edges framing the scene, wide open dark center sky, ${NO_TEXT}, ${QUALITY}`,
+  tree:     `Magnificent 3D Pixar storybook enchanted tree filling a wide landscape frame, lush massive leafy canopy spreading across upper 60% of the scene, warm golden sunlight rays beaming through vibrant green leaves, glowing golden fruits hanging from branches, fireflies, magical forest clearing meadow below, ${NO_TEXT}, ${QUALITY}`,
+};
+
+const RANDOM_POOL = [
+  STYLE_PROMPTS.balloons,
+  STYLE_PROMPTS.stars,
+  STYLE_PROMPTS.tree,
+  `Spectacular 3D Pixar fireworks over a magical night, brilliant bursts in gold pink purple blue filling the sky edges, sparkling embers cascading, wide open dark center sky, ${NO_TEXT}, ${QUALITY}`,
+  `Beautiful 3D Pixar magical rainbow over a lush landscape, giant colorful flowers framing the sides, glowing butterflies, golden hour light, wide open rainbow sky center, ${NO_TEXT}, ${QUALITY}`,
+  `Vibrant 3D Pixar tropical paradise, colorful tropical birds soaring at the edges, turquoise ocean horizon, golden sunset reflections, palm trees framing sides, wide open sky center, ${NO_TEXT}, ${QUALITY}`,
+];
+
+/* Theme colors for banners/borders */
+const THEME = {
+  balloons: { b1:'#1e3a8a', b2:'#1d4ed8', accent:'#f97316' },
+  stars:    { b1:'#1e1b4b', b2:'#4338ca', accent:'#fbbf24' },
+  tree:     { b1:'#14532d', b2:'#166534', accent:'#4ade80' },
+  random:   { b1:'#111827', b2:'#374151', accent:'#a78bfa' },
+  custom:   { b1:'#1e3a5f', b2:'#1e40af', accent:'#60a5fa' },
+};
+
+/* ═══════════════════════════════════════
+   STORAGE
+═══════════════════════════════════════ */
+const DB = {
+  getClasses()        { return JSON.parse(localStorage.getItem('honor_classes')   || '[]'); },
+  saveClasses(d)      { localStorage.setItem('honor_classes', JSON.stringify(d)); },
+  getSettings()       { return JSON.parse(localStorage.getItem('honor_settings')  || '{"schoolName":""}'); },
+  saveSettings(s)     { localStorage.setItem('honor_settings', JSON.stringify(s)); },
+  getChecked(cid)     { return JSON.parse(localStorage.getItem('chk_' + cid)      || '[]'); },
+  saveChecked(cid, a) { localStorage.setItem('chk_' + cid, JSON.stringify(a)); },
+  clearChecked(cid)   { localStorage.removeItem('chk_' + cid); },
+};
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+const S = {
+  view: 'home',
+  classes: DB.getClasses(),
+  settings: DB.getSettings(),
+  currentClassId: null,
+  checkedIds: new Set(),
+  lastBlob: null,
+  selectedStyle: 'random',
+  customPrompt: '',
+  resolvedStyle: 'random',
+};
+
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+/* ═══════════════════════════════════════
+   UTILS
+═══════════════════════════════════════ */
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showToast(msg, ms = 2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), ms);
+}
+function setLoading(on, text = 'جاري تصميم لوحة الشرف...', sub = '⏳ يرسم الذكاء الاصطناعي خلفية مميزة') {
+  document.getElementById('loading-text').textContent = text;
+  document.getElementById('loading-sub').textContent = sub;
+  document.getElementById('loading-overlay').classList.toggle('active', on);
+}
+function updateLoadingText(t, s) {
+  document.getElementById('loading-text').textContent = t;
+  if (s !== undefined) document.getElementById('loading-sub').textContent = s;
+}
+function getArabicDate() {
+  return new Date().toLocaleDateString('ar-SA', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function resolvePrompt(style, custom) {
+  if (style === 'custom') return custom ? `${custom}, ${NO_TEXT}, ${QUALITY}` : null;
+  if (style === 'random') return RANDOM_POOL[Math.floor(Math.random() * RANDOM_POOL.length)];
+  return STYLE_PROMPTS[style] || STYLE_PROMPTS.balloons;
+}
+
+/* ═══════════════════════════════════════
+   ROUTER
+═══════════════════════════════════════ */
+function navigate(view, params = {}) {
+  S.view = view; Object.assign(S, params);
+  render(); window.scrollTo(0, 0);
+}
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = ({
+    home: renderHome, checklist: renderChecklist,
+    manage: renderManage, preview: renderPreview, settings: renderSettings,
+  }[S.view] || renderHome)();
+  app.removeEventListener('click', handleClick);
+  app.addEventListener('click', handleClick);
+}
+
+/* ═══════════════════════════════════════
+   VIEW: HOME
+═══════════════════════════════════════ */
+function renderHome() {
+  const list = S.classes.length === 0
+    ? `<div class="empty-state"><div class="icon">🏫</div><h3>لا توجد فصول بعد</h3><p>اضغط + لإضافة فصل دراسي</p></div>`
+    : `<div class="card">${S.classes.map(c => `
+        <div class="class-item" data-action="open-class" data-id="${c.id}">
+          <div class="class-icon">📚</div>
+          <div class="class-info">
+            <div class="class-name">${esc(c.name)}</div>
+            <div class="class-count">${c.students.length} طالب</div>
+          </div>
+          <div class="class-actions" data-stop>
+            <button class="btn-sm" data-action="edit-class" data-id="${c.id}">✏️</button>
+            <button class="btn-sm danger" data-action="delete-class" data-id="${c.id}">🗑️</button>
+          </div>
+        </div>`).join('')}</div>`;
+  return `
+    <div class="app-header">
+      <span style="font-size:1.35rem">🏆</span>
+      <h1>لوحة الشرف</h1>
+      <button class="btn-icon" data-action="go-settings">⚙️</button>
+    </div>
+    <div class="content">${list}</div>
+    <button class="fab" data-action="add-class">+</button>`;
+}
+
+/* ═══════════════════════════════════════
+   VIEW: CHECKLIST
+═══════════════════════════════════════ */
+function renderChecklist() {
+  const cls = S.classes.find(c => c.id === S.currentClassId);
+  if (!cls) return renderHome();
+  S.checkedIds = new Set(DB.getChecked(cls.id));
+  const count = S.checkedIds.size, total = cls.students.length;
+
+  const studentsHtml = total === 0
+    ? `<div class="empty-state" style="padding:40px 20px"><div class="icon">👦</div><h3>لا يوجد طلاب</h3><p>اضغط ✏️ لإضافة طلاب</p></div>`
+    : cls.students.map(s => {
+        const on = S.checkedIds.has(s.id);
+        return `<div class="student-item ${on?'checked':''}" data-action="toggle-student" data-sid="${s.id}" data-cid="${cls.id}">
+                  <div class="checkbox">${on?'✓':''}</div>
+                  <div class="student-name">${esc(s.name)}</div>
+                </div>`;
+      }).join('');
+
+  const chips = [
+    { key:'random',   label:'✨ عشوائي'  },
+    { key:'balloons', label:'🎈 بلالين'  },
+    { key:'stars',    label:'⭐ نجوم'    },
+    { key:'tree',     label:'🌳 شجرة'    },
+    { key:'custom',   label:'✏️ مخصص'   },
+  ].map(c => `<button class="chip ${S.selectedStyle===c.key?'active':''}" data-action="pick-style" data-style="${c.key}">${c.label}</button>`).join('');
+
+  return `
+    <div class="app-header">
+      <button class="btn-icon" data-action="go-home">←</button>
+      <h1>${esc(cls.name)}</h1>
+      <button class="btn-icon" data-action="edit-class" data-id="${cls.id}">✏️</button>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;">
+      <div class="checklist-info" id="cl-info">تم التحقق من <strong>${count}</strong> من ${total} طالب</div>
+      <div class="select-toolbar">
+        <button class="btn btn-secondary" data-action="sel-all"   data-cid="${cls.id}">تحديد الكل</button>
+        <button class="btn btn-secondary" data-action="desel-all" data-cid="${cls.id}">إلغاء الكل</button>
+        <button class="btn btn-secondary" data-action="clear-day" data-cid="${cls.id}">مسح اليوم</button>
+      </div>
+      <div class="scroll-area">
+        <div class="card" style="margin:12px 12px 0;" id="student-list">${studentsHtml}</div>
+        <div style="height:12px;"></div>
+      </div>
+      <div class="style-selector">
+        <div class="style-label">ثيم لوحة الشرف (بالعرض)</div>
+        <div class="style-chips">${chips}</div>
+        <div class="custom-prompt-wrap ${S.selectedStyle==='custom'?'visible':''}" id="custom-wrap">
+          <input class="custom-prompt-input" id="custom-prompt-input" type="text"
+                 placeholder="صف فكرتك… مثال: سماء زرقاء مع نجوم ذهبية"
+                 value="${esc(S.customPrompt)}">
+          <div class="custom-prompt-hint">اكتب أي وصف بالعربي أو الإنجليزي</div>
+        </div>
+      </div>
+      <div class="generate-bar">
+        <button class="btn btn-primary btn-block" id="gen-btn" data-action="generate" data-cid="${cls.id}" ${count===0?'disabled':''}>
+          🏆 إنشاء لوحة الشرف (${count} طالب)
+        </button>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════
+   VIEW: MANAGE
+═══════════════════════════════════════ */
+function renderManage() {
+  const isNew = !S.currentClassId;
+  const cls = isNew ? {id:'',name:'',students:[]} : (S.classes.find(c=>c.id===S.currentClassId)||{id:'',name:'',students:[]});
+  const stuList = cls.students.length === 0 ? '' : `
+    <p class="section-title">الطلاب المضافون (${cls.students.length})</p>
+    <div class="card">${cls.students.map(s=>`
+      <div class="student-manage-item">
+        <div class="student-manage-name">${esc(s.name)}</div>
+        <button class="btn-sm danger" data-action="remove-student" data-sid="${s.id}" data-cid="${cls.id}">🗑️</button>
+      </div>`).join('')}</div>`;
+  return `
+    <div class="app-header">
+      <button class="btn-icon" data-action="${isNew?'go-home':'go-checklist'}">←</button>
+      <h1>${isNew?'فصل جديد':'تعديل الفصل'}</h1>
+    </div>
+    <div class="content">
+      <div class="card" style="padding:16px;">
+        <div class="form-group">
+          <label class="form-label">اسم الفصل</label>
+          <input class="form-input" id="inp-cls-name" type="text" placeholder="مثال: الفصل الثالث أ" value="${esc(cls.name)}">
+        </div>
+        <hr class="divider">
+        <div class="form-group">
+          <label class="form-label">إضافة طلاب — لصق جماعي</label>
+          <textarea class="form-textarea" id="inp-bulk" placeholder="الصق قائمة الطلاب هنا&#10;كل اسم في سطر مستقل أو مفصول بفاصلة"></textarea>
+          <div class="form-hint">كل اسم في سطر جديد أو مفصول بفاصلة (أو ،). ستُضاف للقائمة الحالية.</div>
+        </div>
+        <div class="actions-row">
+          <button class="btn btn-primary" data-action="save-class" data-id="${cls.id}">💾 حفظ</button>
+          ${!isNew?`<button class="btn btn-danger" data-action="delete-class" data-id="${cls.id}">حذف الفصل</button>`:''}
+        </div>
+      </div>
+      ${stuList}
+    </div>`;
+}
+
+/* ═══════════════════════════════════════
+   VIEW: PREVIEW
+═══════════════════════════════════════ */
+function renderPreview() {
+  return `
+    <div class="app-header" style="background:#060c1a;border-bottom:1px solid rgba(255,255,255,.12);">
+      <button class="btn-icon" data-action="go-checklist" style="background:rgba(255,255,255,.12);">←</button>
+      <h1>لوحة الشرف</h1>
+      <button class="btn-icon" data-action="regenerate" style="background:rgba(255,255,255,.12);">🔄</button>
+    </div>
+    <div class="preview-wrap">
+      <div class="preview-img-area">
+        <img id="preview-img" src="" alt="لوحة الشرف">
+      </div>
+      <div class="preview-actions">
+        <button class="btn btn-whatsapp" data-action="share-wa">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          مشاركة واتساب
+        </button>
+        <button class="btn btn-download" data-action="download">⬇️ تحميل</button>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════
+   VIEW: SETTINGS
+═══════════════════════════════════════ */
+function renderSettings() {
+  return `
+    <div class="app-header">
+      <button class="btn-icon" data-action="go-home">←</button><h1>الإعدادات</h1>
+    </div>
+    <div class="content">
+      <div class="card" style="padding:16px;">
+        <div class="form-group">
+          <label class="form-label">اسم المدرسة (اختياري)</label>
+          <input class="form-input" id="inp-school" type="text" placeholder="يظهر في أعلى لوحة الشرف" value="${esc(S.settings.schoolName||'')}">
+          <div class="form-hint">إذا تركته فارغاً لن يظهر على اللوحة.</div>
+        </div>
+        <button class="btn btn-primary btn-block" data-action="save-settings">💾 حفظ</button>
+      </div>
+      <p class="section-title">عن التطبيق</p>
+      <div class="card" style="padding:16px;">
+        <p class="settings-about"><strong>لوحة الشرف</strong> — الإصدار 1.2 (بالعرض 16:9)<br>لا يحتاج حساباً · يعمل أوفلاين</p>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════
+   EVENTS
+═══════════════════════════════════════ */
+function handleClick(e) {
+  if (e.target.closest('[data-stop]') && !e.target.closest('[data-action]')) return;
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  e.stopPropagation();
+  const { action, id, cid, sid, style } = el.dataset;
+
+  switch (action) {
+    case 'go-home':       navigate('home'); break;
+    case 'go-checklist':  S.currentClassId ? navigate('checklist') : navigate('home'); break;
+    case 'go-settings':   navigate('settings'); break;
+    case 'open-class':    S.currentClassId = id; S.checkedIds = new Set(DB.getChecked(id)); navigate('checklist'); break;
+    case 'add-class':     S.currentClassId = null; navigate('manage'); break;
+    case 'edit-class':    S.currentClassId = id || S.currentClassId; navigate('manage'); break;
+    case 'delete-class':  doDeleteClass(id); break;
+    case 'toggle-student': doToggle(sid, cid); break;
+    case 'sel-all':        doSelAll(cid); break;
+    case 'desel-all':      doDeselAll(cid); break;
+    case 'clear-day':      doClearDay(cid); break;
+    case 'generate':       doGenerate(cid); break;
+    case 'pick-style':
+      S.selectedStyle = style;
+      document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.style === style));
+      const wrap = document.getElementById('custom-wrap');
+      if (wrap) wrap.classList.toggle('visible', style === 'custom');
+      if (style === 'custom') document.getElementById('custom-prompt-input')?.focus();
+      break;
+    case 'save-class':    doSaveClass(id); break;
+    case 'remove-student': doRemoveStudent(sid, cid); break;
+    case 'share-wa':      doShareWA(); break;
+    case 'download':      doDownload(); break;
+    case 'regenerate':    doGenerate(S.currentClassId); break;
+    case 'save-settings': doSaveSettings(); break;
+  }
+}
+
+/* ═══════════════════════════════════════
+   CHECKLIST ACTIONS
+═══════════════════════════════════════ */
+function doToggle(sid, cid) {
+  S.checkedIds.has(sid) ? S.checkedIds.delete(sid) : S.checkedIds.add(sid);
+  DB.saveChecked(cid, [...S.checkedIds]);
+  const item = document.querySelector(`[data-sid="${sid}"]`);
+  if (item) {
+    const on = S.checkedIds.has(sid);
+    item.classList.toggle('checked', on);
+    item.querySelector('.checkbox').textContent = on ? '✓' : '';
+  }
+  const count = S.checkedIds.size;
+  const cls = S.classes.find(c => c.id === cid);
+  const info = document.getElementById('cl-info');
+  if (info && cls) info.innerHTML = `تم التحقق من <strong>${count}</strong> من ${cls.students.length} طالب`;
+  const btn = document.getElementById('gen-btn');
+  if (btn) { btn.disabled = count === 0; btn.textContent = `🏆 إنشاء لوحة الشرف (${count} طالب)`; }
+}
+function doSelAll(cid) {
+  const cls = S.classes.find(c => c.id === cid); if (!cls) return;
+  S.checkedIds = new Set(cls.students.map(s => s.id));
+  DB.saveChecked(cid, [...S.checkedIds]); navigate('checklist');
+}
+function doDeselAll(cid) { S.checkedIds.clear(); DB.saveChecked(cid, []); navigate('checklist'); }
+function doClearDay(cid) {
+  if (!confirm('مسح قائمة اليوم؟')) return;
+  S.checkedIds.clear(); DB.clearChecked(cid); navigate('checklist'); showToast('تم المسح');
+}
+
+/* ═══════════════════════════════════════
+   CLASS MANAGEMENT
+═══════════════════════════════════════ */
+function doDeleteClass(id) {
+  if (!confirm('حذف هذا الفصل نهائياً؟')) return;
+  S.classes = S.classes.filter(c => c.id !== id); DB.saveClasses(S.classes);
+  if (S.view !== 'home') navigate('home'); else render();
+  showToast('تم الحذف');
+}
+function doSaveClass(existingId) {
+  const name = document.getElementById('inp-cls-name')?.value.trim();
+  if (!name) { showToast('الرجاء إدخال اسم الفصل'); return; }
+  const raw = document.getElementById('inp-bulk')?.value.trim() || '';
+  const newStus = raw ? raw.split(/[\n\r,،]+/).map(n => n.trim()).filter(Boolean).map(n => ({id:genId(),name:n})) : [];
+  if (existingId) {
+    const cls = S.classes.find(c => c.id === existingId);
+    if (cls) { cls.name = name; cls.students = [...cls.students, ...newStus]; }
+  } else {
+    const cls = {id:genId(), name, students:newStus};
+    S.classes.push(cls); S.currentClassId = cls.id;
+  }
+  DB.saveClasses(S.classes);
+  showToast(`تم الحفظ ✓${newStus.length ? ` — ${newStus.length} طالب` : ''}`);
+  navigate(existingId ? 'manage' : 'checklist');
+}
+function doRemoveStudent(sid, cid) {
+  const cls = S.classes.find(c => c.id === cid); if (!cls) return;
+  cls.students = cls.students.filter(s => s.id !== sid);
+  S.checkedIds.delete(sid); DB.saveClasses(S.classes); DB.saveChecked(cid, [...S.checkedIds]);
+  navigate('manage');
+}
+function doSaveSettings() {
+  S.settings = { ...S.settings, schoolName: document.getElementById('inp-school')?.value.trim() || '' };
+  DB.saveSettings(S.settings); showToast('تم الحفظ ✓');
+}
+
+/* ═══════════════════════════════════════
+   GENERATE ENTRY
+═══════════════════════════════════════ */
+async function doGenerate(cid) {
+  const cls = S.classes.find(c => c.id === cid); if (!cls) return;
+  const students = cls.students.filter(s => S.checkedIds.has(s.id));
+  if (students.length === 0) { showToast('الرجاء تحديد طالب واحد على الأقل'); return; }
+
+  if (S.selectedStyle === 'custom') {
+    const inp = document.getElementById('custom-prompt-input');
+    S.customPrompt = inp?.value.trim() || S.customPrompt;
+    if (!S.customPrompt) { showToast('الرجاء كتابة وصف الخلفية أولاً'); inp?.focus(); return; }
+  }
+
+  const prompt = resolvePrompt(S.selectedStyle, S.customPrompt);
+  if (!prompt) { showToast('لم يتم تحديد ثيم صالح'); return; }
+
+  S.resolvedStyle = S.selectedStyle;
+  setLoading(true, 'جاري تصميم لوحة الشرف...', '⏳ يرسم الذكاء الاصطناعي خلفية بالعرض');
+
+  try {
+    const blob = await buildHonorBoard(students, cls.name, S.settings.schoolName || '', getArabicDate(), prompt, S.resolvedStyle);
+    S.lastBlob = blob;
+    navigate('preview');
+    const img = document.getElementById('preview-img');
+    if (img) img.src = URL.createObjectURL(blob);
+  } catch (err) {
+    console.error(err);
+    setLoading(false);
+    showToast('خطأ: ' + err.message, 5000);
+  } finally {
+    setLoading(false);
+  }
+}
+
+/* ═══════════════════════════════════════
+   CANVAS HELPERS
+═══════════════════════════════════════ */
+function loadImg(src) {
+  return new Promise((res, rej) => {
+    const img = new Image(); img.onload = () => res(img); img.onerror = () => rej(new Error('فشل تحميل صورة الذكاء الاصطناعي')); img.src = src;
+  });
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  r = Math.min(r, w/2, h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y); ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+}
+
+/* Star path helper (5-pointed) */
+function star5Path(ctx, cx, cy, oR, iR, rot = -Math.PI/2) {
+  ctx.beginPath();
+  for (let k = 0; k < 10; k++) {
+    const r = k%2===0 ? oR : iR;
+    const a = rot + k*Math.PI/5;
+    k===0 ? ctx.moveTo(cx+r*Math.cos(a), cy+r*Math.sin(a))
+           : ctx.lineTo(cx+r*Math.cos(a), cy+r*Math.sin(a));
+  }
+  ctx.closePath();
+}
+
+/* Deterministic fallback background */
+function mulberry32(a) {
+  return () => { a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
+}
+function drawFallback(ctx, W, H, styleName) {
+  const th = THEME[styleName] || THEME.random;
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, th.b1); g.addColorStop(0.5, th.b2); g.addColorStop(1, th.b1);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const rng = mulberry32(42);
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  for (let i = 0; i < 140; i++) { ctx.beginPath(); ctx.arc(rng()*W, rng()*H, rng()*3+1, 0, Math.PI*2); ctx.fill(); }
+  ctx.strokeStyle = `rgba(255,215,0,0.14)`; ctx.lineWidth = 2;
+  for (let i = 0; i < 8; i++) { ctx.beginPath(); ctx.arc(rng()*W, rng()*H, rng()*120+50, 0, Math.PI*2); ctx.stroke(); }
+}
+
+/* Grid layout optimizer */
+function computeLayout(N, availW, availH, GAP = 18, MAX = 200) {
+  if (N <= 0) return { cols:1, rows:1, size:MAX, gap:GAP };
+  let bestCols = 1, bestSize = 0;
+  for (let cols = 1; cols <= Math.min(N, 12); cols++) {
+    const rows = Math.ceil(N / cols);
+    if (rows > 7) continue;
+    const cW = (availW - (cols-1)*GAP) / cols;
+    const cH = (availH - (rows-1)*GAP) / rows;
+    const size = Math.min(cW, cH, MAX);
+    if (size > bestSize) { bestSize = size; bestCols = cols; }
+  }
+  return { cols: Math.max(1,bestCols), rows: Math.ceil(N/Math.max(1,bestCols)), size: Math.max(60,bestSize), gap: GAP };
+}
+
+/* Smart text fitting: 1-line → 2-line → ellipsis */
+function drawTextInShape(ctx, name, cx, cy, maxW, minFs, maxFs) {
+  ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  let fs = maxFs;
+  ctx.font = `700 ${fs}px Cairo`;
+  while (ctx.measureText(name).width > maxW && fs > minFs + 4) { fs--; ctx.font = `700 ${fs}px Cairo`; }
+  if (ctx.measureText(name).width <= maxW) { ctx.fillText(name, cx, cy); return; }
+
+  // Try 2-line split
+  const words = name.trim().split(/\s+/);
+  if (words.length >= 2) {
+    let best = 1, bestDiff = Infinity;
+    for (let s = 1; s < words.length; s++) {
+      const d = Math.abs(ctx.measureText(words.slice(0,s).join(' ')).width - ctx.measureText(words.slice(s).join(' ')).width);
+      if (d < bestDiff) { bestDiff = d; best = s; }
+    }
+    const l1 = words.slice(0, best).join(' '), l2 = words.slice(best).join(' ');
+    while ((ctx.measureText(l1).width > maxW || ctx.measureText(l2).width > maxW) && fs > minFs) { fs--; ctx.font = `700 ${fs}px Cairo`; }
+    const lh = fs * 1.28;
+    ctx.fillText(l1, cx, cy - lh/2); ctx.fillText(l2, cx, cy + lh/2);
+    return;
+  }
+
+  // Ellipsis
+  let txt = name;
+  while (ctx.measureText(txt+'…').width > maxW && txt.length > 2) txt = txt.slice(0,-1);
+  ctx.fillText(txt !== name ? txt+'…' : txt, cx, cy);
+}
+
+/* ═══════════════════════════════════════
+   SHAPE DRAWERS
+═══════════════════════════════════════ */
+
+/* 🎈 BALLOON */
+function drawBalloon(ctx, cx, cy, R, colorIdx, name, fs) {
+  const PAL = [
+    ['#ef4444','#fca5a5','#7f1d1d'], // red
+    ['#3b82f6','#93c5fd','#1e3a8a'], // blue
+    ['#eab308','#fef08a','#713f12'], // yellow
+    ['#22c55e','#86efac','#14532d'], // green
+    ['#8b5cf6','#c4b5fd','#3b0764'], // purple
+    ['#f97316','#fed7aa','#7c2d12'], // orange
+    ['#ec4899','#fbcfe8','#831843'], // pink
+    ['#06b6d4','#a5f3fc','#083344'], // cyan
+  ];
+  const [mid, hi, dk] = PAL[colorIdx % PAL.length];
+  const bR  = R * 0.75;    // vertical radius
+  const bHR = bR * 0.82;   // horizontal radius (slightly wider-than-tall oval → classic balloon)
+  const bCY = cy - R * 0.07;
+
+  // Shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.28)'; ctx.shadowBlur = R*0.22; ctx.shadowOffsetX = R*0.04; ctx.shadowOffsetY = R*0.11;
+
+  // Body gradient
+  const g = ctx.createRadialGradient(cx-bHR*0.3, bCY-bR*0.32, bR*0.03, cx, bCY, bR*1.08);
+  g.addColorStop(0, hi); g.addColorStop(0.35, mid); g.addColorStop(1, dk);
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(cx, bCY, bHR, bR, 0, 0, Math.PI*2); ctx.fill();
+
+  ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+
+  // Specular highlight
+  const hg = ctx.createRadialGradient(cx-bHR*0.3, bCY-bR*0.32, 0, cx-bHR*0.3, bCY-bR*0.32, bR*0.4);
+  hg.addColorStop(0,'rgba(255,255,255,0.78)'); hg.addColorStop(0.4,'rgba(255,255,255,0.3)'); hg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle = hg;
+  ctx.beginPath(); ctx.ellipse(cx-bHR*0.3, bCY-bR*0.32, bR*0.28, bR*0.22, -0.3, 0, Math.PI*2); ctx.fill();
+
+  // Knot
+  ctx.fillStyle = dk;
+  ctx.beginPath(); ctx.arc(cx, bCY+bR+Math.max(4,R*0.06), Math.max(3,R*0.052), 0, Math.PI*2); ctx.fill();
+
+  // String
+  const kY = bCY + bR + Math.max(7, R*0.11);
+  const strEndY = cy + R*0.97;
+  ctx.strokeStyle = 'rgba(40,40,40,0.45)'; ctx.lineWidth = Math.max(1.2, R*0.014); ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(cx, kY);
+  ctx.quadraticCurveTo(cx + R*0.24, (kY+strEndY)*0.5, cx + R*0.08, strEndY); ctx.stroke();
+
+  // Name text
+  ctx.fillStyle = '#fff';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = Math.max(2, R*0.04);
+  const maxW = bHR * 1.56;
+  drawTextInShape(ctx, name, cx, bCY + bR*0.08, maxW, Math.max(11, fs-9), fs);
+  ctx.shadowBlur = 0;
+}
+
+/* ⭐ STAR */
+function drawStar(ctx, cx, cy, R, name, fs) {
+  const oR = R * 0.90, iR = R * 0.50;
+
+  // Outer glow
+  const gg = ctx.createRadialGradient(cx, cy, iR*0.5, cx, cy, oR*1.65);
+  gg.addColorStop(0,'rgba(254,215,0,0.45)'); gg.addColorStop(0.5,'rgba(251,191,36,0.18)'); gg.addColorStop(1,'rgba(251,191,36,0)');
+  ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(cx, cy, oR*1.65, 0, Math.PI*2); ctx.fill();
+
+  // Shadow
+  ctx.shadowColor = 'rgba(100,50,0,0.4)'; ctx.shadowBlur = R*0.18; ctx.shadowOffsetX = R*0.04; ctx.shadowOffsetY = R*0.09;
+
+  // Body gradient
+  const bg = ctx.createRadialGradient(cx-oR*0.22, cy-oR*0.22, 0, cx, cy, oR);
+  bg.addColorStop(0,'#fef9c3'); bg.addColorStop(0.3,'#fef08a'); bg.addColorStop(0.65,'#fbbf24'); bg.addColorStop(0.85,'#d97706'); bg.addColorStop(1,'#92400e');
+  ctx.fillStyle = bg; star5Path(ctx, cx, cy, oR, iR); ctx.fill();
+
+  ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+
+  // Outline
+  ctx.strokeStyle = 'rgba(120,50,0,0.5)'; ctx.lineWidth = Math.max(1.5, R*0.022); ctx.lineJoin = 'miter';
+  star5Path(ctx, cx, cy, oR, iR); ctx.stroke();
+
+  // Specular glint
+  const sg = ctx.createRadialGradient(cx+oR*0.18, cy-oR*0.42, 0, cx+oR*0.18, cy-oR*0.42, oR*0.38);
+  sg.addColorStop(0,'rgba(255,255,255,0.72)'); sg.addColorStop(0.5,'rgba(255,255,255,0.28)'); sg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle = sg; star5Path(ctx, cx, cy, oR*0.88, iR*0.88); ctx.fill();
+
+  // Name text — dark on gold
+  ctx.fillStyle = '#3b1f00';
+  ctx.shadowColor = 'rgba(255,255,220,0.5)'; ctx.shadowBlur = 3;
+  const maxW = iR * 1.8;
+  drawTextInShape(ctx, name, cx, cy + R*0.06, maxW, Math.max(11, fs-7), fs);
+  ctx.shadowBlur = 0;
+}
+
+/* 🍎 FRUIT / APPLE */
+function drawFruit(ctx, cx, cy, R, colorIdx, name, fs) {
+  const PAL = [
+    ['#dc2626','#fca5a5','#7f1d1d'], // red apple
+    ['#ca8a04','#fde68a','#78350f'], // golden apple
+    ['#16a34a','#86efac','#14532d'], // green apple
+    ['#9333ea','#d8b4fe','#4c1d95'], // purple (exotic)
+  ];
+  const [mid, hi, dk] = PAL[colorIdx % PAL.length];
+  const aR  = R * 0.76;
+  const aCY = cy + R * 0.05; // shift down slightly for stem above
+
+  // Shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = R*0.2; ctx.shadowOffsetX = R*0.04; ctx.shadowOffsetY = R*0.1;
+
+  // Body
+  const bg = ctx.createRadialGradient(cx-aR*0.28, aCY-aR*0.28, 0, cx, aCY, aR*1.08);
+  bg.addColorStop(0,hi); bg.addColorStop(0.4,mid); bg.addColorStop(1,dk);
+  ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(cx, aCY, aR, 0, Math.PI*2); ctx.fill();
+
+  ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+
+  // Specular
+  const hg = ctx.createRadialGradient(cx-aR*0.3, aCY-aR*0.3, 0, cx-aR*0.3, aCY-aR*0.3, aR*0.42);
+  hg.addColorStop(0,'rgba(255,255,255,0.72)'); hg.addColorStop(0.5,'rgba(255,255,255,0.28)'); hg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle = hg; ctx.beginPath(); ctx.ellipse(cx-aR*0.3, aCY-aR*0.3, aR*0.3, aR*0.24, -0.4, 0, Math.PI*2); ctx.fill();
+
+  // Stem
+  ctx.strokeStyle = '#713f12'; ctx.lineWidth = Math.max(2.5,aR*0.08); ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(cx+aR*0.06, aCY-aR*0.9);
+  ctx.quadraticCurveTo(cx+aR*0.28, aCY-aR*1.18, cx+aR*0.4, aCY-aR*1.1);
+  ctx.stroke();
+
+  // Leaf
+  ctx.fillStyle = '#16a34a'; ctx.strokeStyle = '#14532d'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx+aR*0.14, aCY-aR*0.98);
+  ctx.quadraticCurveTo(cx+aR*0.52, aCY-aR*1.3, cx+aR*0.54, aCY-aR*0.9);
+  ctx.quadraticCurveTo(cx+aR*0.3, aCY-aR*0.84, cx+aR*0.14, aCY-aR*0.98);
+  ctx.fill(); ctx.stroke();
+
+  // Name text
+  ctx.fillStyle = '#fff';
+  ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = Math.max(3,R*0.05);
+  const maxW = aR * 1.56;
+  drawTextInShape(ctx, name, cx, aCY + aR*0.06, maxW, Math.max(11, fs-8), fs);
+  ctx.shadowBlur = 0;
+}
+
+/* 🏅 MEDALLION */
+function drawMedallion(ctx, cx, cy, R, name, fs, colorIdx) {
+  const RINGS = [
+    ['#fbbf24','#d97706','#92400e'], // gold
+    ['#60a5fa','#2563eb','#1e3a8a'], // blue
+    ['#34d399','#059669','#064e3b'], // green
+    ['#f472b6','#db2777','#831843'], // pink
+    ['#a78bfa','#7c3aed','#4c1d95'], // purple
+  ];
+  const [oC, mC, iC] = RINGS[colorIdx % RINGS.length];
+  const oR = R*0.90, mR = R*0.74, cR = R*0.57;
+
+  // Shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.38)'; ctx.shadowBlur = R*0.22; ctx.shadowOffsetX = R*0.04; ctx.shadowOffsetY = R*0.1;
+
+  // Outer ring
+  const og = ctx.createRadialGradient(cx-oR*0.28, cy-oR*0.28, 0, cx, cy, oR);
+  og.addColorStop(0,'#fff9c4'); og.addColorStop(0.3,oC); og.addColorStop(0.75,mC); og.addColorStop(1,iC);
+  ctx.fillStyle = og; ctx.beginPath(); ctx.arc(cx, cy, oR, 0, Math.PI*2); ctx.fill();
+
+  ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+
+  // Inner decorative ring
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, mR, 0, Math.PI*2); ctx.stroke();
+
+  // Core circle
+  const cg = ctx.createRadialGradient(cx-cR*0.3, cy-cR*0.3, 0, cx, cy, cR);
+  cg.addColorStop(0,'#fffbeb'); cg.addColorStop(0.6,'#fef3c7'); cg.addColorStop(1,'#fde68a');
+  ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, cy, cR, 0, Math.PI*2); ctx.fill();
+
+  // Small star inside core (top area)
+  const sR = cR*0.28, sCY = cy - cR*0.38;
+  const sg = ctx.createRadialGradient(cx, sCY, 0, cx, sCY, sR);
+  sg.addColorStop(0,'#fef9c3'); sg.addColorStop(1,'#d97706');
+  ctx.fillStyle = sg; ctx.shadowColor = 'rgba(146,64,14,0.3)'; ctx.shadowBlur = 4;
+  star5Path(ctx, cx, sCY, sR, sR*0.46, -Math.PI/2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Name text
+  ctx.fillStyle = '#78350f';
+  ctx.shadowColor = 'rgba(255,255,255,0.3)'; ctx.shadowBlur = 2;
+  const maxW = cR * 1.68;
+  drawTextInShape(ctx, name, cx, cy + cR*0.12, maxW, Math.max(11, fs-6), fs);
+  ctx.shadowBlur = 0;
+}
+
+/* ═══════════════════════════════════════
+   RIBBON HEADER BANNER
+═══════════════════════════════════════ */
+function drawHeaderBanner(ctx, W, bannerH, schoolName, className, dateStr, styleName) {
+  const th = THEME[styleName] || THEME.custom;
+
+  // Background with gentle S-curve bottom edge
+  const grad = ctx.createLinearGradient(0, 0, 0, bannerH);
+  grad.addColorStop(0, th.b1+'f5');
+  grad.addColorStop(0.65, th.b2+'e0');
+  grad.addColorStop(1, th.b2+'00');
+  ctx.beginPath();
+  ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(W, bannerH - 20);
+  ctx.bezierCurveTo(W*0.78, bannerH+14, W*0.5, bannerH-10, W*0.22, bannerH+8);
+  ctx.bezierCurveTo(W*0.08, bannerH+16, 0, bannerH-14, 0, bannerH-14);
+  ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  // Gold top stripe
+  ctx.fillStyle = '#F59E0B'; ctx.fillRect(0, 0, W, 7);
+
+  // Wavy gold accent at banner bottom
+  ctx.strokeStyle = `rgba(251,191,36,0.7)`; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(0, bannerH-14);
+  ctx.bezierCurveTo(W*0.08, bannerH+16, W*0.22, bannerH+8, W*0.5, bannerH-10);
+  ctx.bezierCurveTo(W*0.78, bannerH+14, W, bannerH-20, W, bannerH-20);
+  ctx.stroke();
+
+  // Corner ornaments
+  const ornSz = Math.round(bannerH * 0.52);
+  ctx.font = `${ornSz}px serif`; ctx.fillStyle = `rgba(251,191,36,0.5)`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const ornY = bannerH * 0.46;
+  ctx.fillText('❋', 50, ornY); ctx.fillText('❋', W-50, ornY);
+
+  // ── Text ──
+  const sdw = (b=12) => { ctx.shadowColor='rgba(0,0,0,0.65)'; ctx.shadowBlur=b; ctx.shadowOffsetX=1; ctx.shadowOffsetY=2; };
+  const noSdw = () => { ctx.shadowBlur=0; ctx.shadowOffsetX=0; ctx.shadowOffsetY=0; };
+  ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+
+  let ty = 12;
+  if (schoolName) {
+    sdw(8); ctx.font = '600 20px Cairo'; ctx.fillStyle = 'rgba(255,245,210,0.95)';
+    ctx.fillText(schoolName, W/2, ty+10); ty += 26; noSdw();
+  }
+  sdw(18);
+  const tFs = schoolName ? 28 : 32;
+  ctx.font = `900 ${tFs}px Cairo`; ctx.fillStyle = '#FDE68A';
+  ctx.fillText('🏆  لوحة الشرف  🏆', W/2, ty + tFs*0.54); ty += tFs+5; noSdw();
+  sdw(8); ctx.font = '600 20px Cairo'; ctx.fillStyle = 'rgba(255,255,255,0.90)';
+  ctx.fillText(`${className}  ·  ${dateStr}`, W/2, ty+10); noSdw();
+}
+
+/* ═══════════════════════════════════════
+   RIBBON FOOTER BANNER
+═══════════════════════════════════════ */
+function drawFooterBanner(ctx, W, H, footerH, styleName, usedFallback, errorDetail) {
+  const th = THEME[styleName] || THEME.custom;
+  const fy = H - footerH;
+
+  const grad = ctx.createLinearGradient(0, fy, 0, H);
+  grad.addColorStop(0, th.b2+'00'); grad.addColorStop(0.3, th.b1+'e8'); grad.addColorStop(1, th.b1+'f8');
+
+  ctx.beginPath();
+  ctx.moveTo(0, fy+16);
+  ctx.bezierCurveTo(W*0.1, fy-14, W*0.28, fy+10, W*0.5, fy-6);
+  ctx.bezierCurveTo(W*0.72, fy+14, W*0.9, fy-10, W, fy+8);
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  // Gold bottom stripe
+  ctx.fillStyle = '#F59E0B'; ctx.fillRect(0, H-7, W, 7);
+
+  // Wavy gold accent at top of footer
+  ctx.strokeStyle = 'rgba(251,191,36,0.7)'; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(0, fy+16);
+  ctx.bezierCurveTo(W*0.1, fy-14, W*0.28, fy+10, W*0.5, fy-6);
+  ctx.bezierCurveTo(W*0.72, fy+14, W*0.9, fy-10, W, fy+8);
+  ctx.stroke();
+
+  // Footer text
+  ctx.font = '700 24px Cairo'; ctx.fillStyle = '#FDE68A';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 8;
+  ctx.fillText('أحسنتم! واصلوا التميز 🌟', W/2, H - footerH*0.46); ctx.shadowBlur = 0;
+
+  if (usedFallback && errorDetail) {
+    ctx.font = '400 15px Cairo'; ctx.fillStyle = 'rgba(255,180,80,0.6)';
+    ctx.fillText(`⚠ قالب احتياطي · ${errorDetail.slice(0,55)}`, W/2, H-16);
+  }
+}
+
+/* ═══════════════════════════════════════
+   DRAW OVERLAY  (master compositor)
+═══════════════════════════════════════ */
+function drawOverlay(ctx, W, H, students, className, schoolName, dateStr, styleName, usedFallback, errMsg) {
+  const HEADER_H  = schoolName ? 110 : 90;
+  const FOOTER_H  = 68;
+  const PAD_X     = 44;
+  const TOP_PAD   = 14;
+  const BOT_PAD   = 12;
+  const GAP       = 18;
+  const MAX_SIZE  = 200;
+
+  const availW = W - PAD_X*2;
+  const availH = H - HEADER_H - FOOTER_H - TOP_PAD - BOT_PAD;
+
+  // Header ribbon
+  drawHeaderBanner(ctx, W, HEADER_H, schoolName, className, dateStr, styleName);
+
+  // Layout
+  const { cols, rows, size } = computeLayout(students.length, availW, availH, GAP, MAX_SIZE);
+  const r   = size / 2;
+  const fs  = Math.min(32, Math.max(13, Math.round(size * 0.21)));
+
+  const totalGW = cols*size + (cols-1)*GAP;
+  const totalGH = rows*size + (rows-1)*GAP;
+  const gx0 = (W - totalGW) / 2;
+  const gy0 = HEADER_H + TOP_PAD + (availH - totalGH) / 2;
+
+  // Organic row offset (alternating rows)
+  const orgAmt = Math.min(size * 0.065, GAP * 0.42);
+
+  for (let i = 0; i < students.length; i++) {
+    const col  = i % cols;
+    const row  = Math.floor(i / cols);
+    const orgY = (row % 2 === 0 ? -1 : 1) * orgAmt;
+
+    // Center the last partial row
+    const isLastRow   = row === rows - 1;
+    const lastRowCnt  = students.length - (rows-1)*cols;
+    let cx;
+    if (isLastRow && lastRowCnt < cols) {
+      const lrW = lastRowCnt*size + (lastRowCnt-1)*GAP;
+      cx = (W - lrW) / 2 + (i - (rows-1)*cols) * (size+GAP) + r;
+    } else {
+      cx = gx0 + col*(size+GAP) + r;
+    }
+    const cy = gy0 + row*(size+GAP) + r + orgY;
+
+    switch (styleName) {
+      case 'balloons': drawBalloon(ctx, cx, cy, r, i, students[i].name, fs); break;
+      case 'stars':    drawStar(ctx, cx, cy, r, students[i].name, fs);       break;
+      case 'tree':     drawFruit(ctx, cx, cy, r, i, students[i].name, fs);   break;
+      default:         drawMedallion(ctx, cx, cy, r, students[i].name, fs, i); break;
+    }
+  }
+
+  // Footer ribbon
+  drawFooterBanner(ctx, W, H, FOOTER_H, styleName, usedFallback, errMsg);
+}
+
+/* ─── Fetch AI Background: Pollinations ─── */
+async function fetchPollinationsImage(aiPrompt) {
+  const seed   = Math.floor(Math.random() * 999999);
+  const params = new URLSearchParams({ model:'black-forest-labs/flux.1-schnell', width:CW, height:CH, seed });
+  const url    = `${API_BASE}/image/${encodeURIComponent(aiPrompt)}?${params}`;
+
+  updateLoadingText('جاري تحميل صورة Pollinations...', `seed: ${seed}`);
+
+  let resp;
+  try {
+    resp = await fetch(url, { headers: { 'Authorization': `Bearer ${API_KEY}` } });
+  } catch (_) {
+    resp = await fetch(`${url}&key=${API_KEY}`);
+  }
+  if (!resp.ok) {
+    let body = ''; try { body = await resp.text(); } catch (_) {}
+    throw new Error(`HTTP ${resp.status} ${resp.statusText} · ${body.slice(0,100)}`);
+  }
+
+  const blob   = await resp.blob();
+  const objUrl = URL.createObjectURL(blob);
+  updateLoadingText('جاري رسم الخلفية على اللوحة...', '');
+  const bgImg  = await loadImg(objUrl);
+  URL.revokeObjectURL(objUrl);
+  return bgImg;
+}
+
+/* ═══════════════════════════════════════
+   BUILD HONOR BOARD  (AI + Canvas)
+═══════════════════════════════════════ */
+async function buildHonorBoard(students, className, schoolName, dateStr, aiPrompt, styleName) {
+  const canvas = document.getElementById('honor-canvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.width = CW; canvas.height = CH;
+
+  /* 1 — AI background */
+  updateLoadingText('جاري رسم الخلفية بالذكاء الاصطناعي...', 'بالعرض 16:9 ✨');
+  let usedFallback = false, errMsg = null;
+
+  try {
+    const bgImg = await fetchPollinationsImage(aiPrompt);
+    ctx.drawImage(bgImg, 0, 0, CW, CH);
+  } catch (err) {
+    console.error('[AI]', err);
+    errMsg = err.message;
+    updateLoadingText('⚠ فشل الذكاء الاصطناعي', `${err.message.slice(0, 80)} — جاري القالب الاحتياطي`);
+    await sleep(2000);
+    usedFallback = true;
+    drawFallback(ctx, CW, CH, styleName);
+  }
+
+  /* 2 — Load fonts */
+  updateLoadingText('جاري رسم الأسماء بالعربي...', '');
+  try {
+    await Promise.all([
+      document.fonts.load('900 72px Cairo'),
+      document.fonts.load('700 48px Cairo'),
+      document.fonts.load('500 28px Cairo'),
+    ]);
+  } catch (_) {}
+
+  /* 3 — Draw overlay */
+  drawOverlay(ctx, CW, CH, students, className, schoolName, dateStr, styleName, usedFallback, errMsg);
+
+  /* 4 — Export */
+  updateLoadingText('جاري تجهيز الصورة النهائية...', '');
+  return new Promise((res, rej) =>
+    canvas.toBlob(b => b ? res(b) : rej(new Error('فشل تصدير الصورة')), 'image/png')
+  );
+}
+
+/* ═══════════════════════════════════════
+   SHARE & DOWNLOAD
+═══════════════════════════════════════ */
+async function doShareWA() {
+  if (!S.lastBlob) { showToast('لا توجد صورة'); return; }
+  const file = new File([S.lastBlob], 'لوحة-الشرف.png', { type:'image/png' });
+  if (navigator.share && navigator.canShare?.({ files:[file] })) {
+    try { await navigator.share({ files:[file], title:'لوحة الشرف', text:'🏆 الطلاب المتميزون اليوم' }); }
+    catch(e) { if (e.name !== 'AbortError') doDownload(); }
+  } else {
+    showToast('المتصفح لا يدعم المشاركة المباشرة — سيتم التحميل');
+    doDownload();
+  }
+}
+function doDownload() {
+  if (!S.lastBlob) { showToast('لا توجد صورة'); return; }
+  const url = URL.createObjectURL(S.lastBlob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `لوحة-الشرف-${new Date().toISOString().slice(0,10)}.png`;
+  a.click(); setTimeout(() => URL.revokeObjectURL(url), 8000);
+  showToast('⬇️ جاري التحميل...');
+}
+
+/* ═══════════════════════════════════════
+   SERVICE WORKER
+═══════════════════════════════════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+
+/* Boot */
+render();
+</script>
+</body>
+</html>

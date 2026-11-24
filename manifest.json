@@ -1,0 +1,39 @@
+{
+  "name": "لوحة الشرف",
+  "short_name": "لوحة الشرف",
+  "description": "تطبيق تعليمي للمعلمين لإنشاء لوحة شرف يومية وتحفيز الطلاب المتميزين",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1e3a5f",
+  "theme_color": "#1e3a5f",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "فصول دراسية",
+      "url": "./index.html",
+      "description": "عرض قائمة الفصول"
+    }
+  ]
+}
